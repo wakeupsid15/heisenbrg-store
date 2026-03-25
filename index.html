@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Heisenbrg | Premium Posters</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #062c1a 0%, #050505 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: white;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .banner-wrapper {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            overflow: hidden;
+        }
+        @media (min-width: 1024px) { .banner-wrapper { height: 240px; } }
+
+        .banner-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('assets/branding/banner.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .glow-title {
+            position: relative;
+            z-index: 2;
+            color: #00ff88;
+            text-transform: uppercase;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 0 10px 30px rgba(0,0,0,0.8);
+            letter-spacing: 0.5em;
+            margin-right: -0.5em;
+            font-size: 1.8rem;
+        }
+        @media (min-width: 1024px) { .glow-title { font-size: 4rem; letter-spacing: 1.2em; margin-right: -1.2em; } }
+
+        /* INSTAGRAM BUTTON */
+        .insta-link {
+            position: relative;
+            z-index: 2;
+            margin-top: 15px;
+            display: flex;
+            items-center: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 99px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+        .insta-link:hover { background: #00ff88; color: black; border-color: #00ff88; }
+        .insta-link svg { width: 14px; height: 14px; }
+
+        /* 5PX WHITE FRAME */
+        .poster-frame {
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+            aspect-ratio: 2/3;
+            background: #111;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-btn {
+            padding: 8px 20px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            font-weight: 900;
+            font-size: 10px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+            color: #666;
+        }
+        .nav-btn.active { background: #00ff88; color: black; border-color: #00ff88; }
+
+        .collection-bubble {
+            position: absolute;
+            top: -10px; right: -10px;
+            background: #00ff88; color: black;
+            font-size: 10px; font-weight: 900;
+            padding: 4px 10px; border-radius: 4px;
+            z-index: 10;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="font-sans">
+
+    <header class="banner-wrapper">
+        <div class="banner-bg"></div>
+        <h1 class="glow-title">Heisenbrg</h1>
+        <a href="https://www.instagram.com/heisenbrg.psd" target="_blank" class="insta-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            @heisenbrg.psd
+        </a>
+    </header>
+
+    <nav class="sticky top-0 z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <input type="text" id="search" placeholder="Search movies..." onkeyup="render()" 
+                class="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 outline-none focus:border-[#00ff88] transition-all text-center">
+            <div id="nav-btns" class="flex gap-2 overflow-x-auto no-scrollbar justify-start md:justify-center"></div>
+        </div>
+    </nav>
+
+    <main id="poster-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 max-w-7xl mx-auto"></main>
+
+    <div id="collection-page" class="hidden fixed inset-0 bg-black/95 z-[100] overflow-y-auto p-6 backdrop-blur-xl">
+        <div class="max-w-5xl mx-auto">
+            <button onclick="closeCollection()" class="mb-8 text-[#00ff88] font-black uppercase tracking-widest text-sm">✕ Close Series</button>
+            <h2 id="col-title" class="text-3xl font-black uppercase text-center mb-10 border-b border-white/10 pb-4"></h2>
+            <div id="collection-grid" class="grid grid-cols-2 md:grid-cols-3 gap-6"></div>
+        </div>
+    </div>
+
+    <div id="product-page" class="hidden fixed inset-0 bg-[#050505] z-[110] overflow-y-auto p-6 flex flex-col items-center">
+        <div class="w-full max-w-4xl">
+            <button onclick="closeProduct()" class="mb-8 text-[#00ff88] font-black uppercase tracking-widest text-sm">← Back</button>
+            <div class="flex flex-col md:flex-row gap-10 items-center">
+                <div class="poster-frame w-full max-w-[350px]">
+                    <img id="p-img" src="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h2 id="p-name" class="text-4xl md:text-6xl font-black uppercase mb-8"></h2>
+                    
+                    <div class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-8">
+                        <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">Select Size</p>
+                        <div class="grid grid-cols-1 gap-4 mb-8">
+                            <button onclick="selectSize('A4 (210 x 297 mm)', 100, this)" class="size-btn active border border-white/20 p-4 rounded-xl flex justify-between items-center font-bold">
+                                <div class="text-left">
+                                    <span class="block text-sm">A4 Size</span>
+                                    <span class="text-[10px] text-gray-400 font-normal">Ratio 1:1.41 (210 × 297 mm)</span>
+                                </div>
+                                <span>₹100</span>
+                            </button>
+                            
+                            <button onclick="selectSize('A6 (105 x 148 mm)', 50, this)" class="size-btn border border-white/20 p-4 rounded-xl flex justify-between items-center font-bold">
+                                <div class="text-left">
+                                    <span class="block text-sm">A6 Size</span>
+                                    <span class="text-[10px] text-gray-400 font-normal">Ratio 1:1.41 (105 × 148 mm)</span>
+                                </div>
+                                <span>₹50</span>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-end pt-4 border-t border-white/10">
+                            <div><p class="text-gray-500 text-[10px] uppercase font-bold">Total</p><p id="display-price" class="text-4xl font-black">₹100</p></div>
+                            <span class="text-[10px] font-bold text-gray-400 italic">300 GSM MATTE FINISH</span>
+                        </div>
+                    </div>
+                    <a id="wa-link" href="#" target="_blank" class="block w-full bg-[#00ff88] text-black py-5 rounded-xl font-black uppercase tracking-widest text-center shadow-lg">Order via WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PHONE_NUMBER = "917671906173";
+        let selectedPoster = null;
+        let selectedSizeText = "A4 (210 x 297 mm)";
+        let selectedPrice = 100;
+
+        const posters = [
+            { id: 1, name: "Salaar", version: "V1", lang: "Telugu", file: "assets/telugu/salaar.jpg" },
+            { id: 2, name: "Salaar", version: "V2", lang: "Telugu", file: "assets/telugu/salaar_2.jpg" },
+            { id: 3, name: "Salaar", version: "V3", lang: "Telugu", file: "assets/telugu/salaar_3.jpg" },
+            { id: 4, name: "Athadu", version: "V1", lang: "Telugu", file: "assets/telugu/athadu.jpg" },
+            { id: 5, name: "Athadu", version: "V2", lang: "Telugu", file: "assets/telugu/athadu_2.jpg" },
+            { id: 6, name: "Khaleja", version: "V1", lang: "Telugu", file: "assets/telugu/khaleja.jpg" },
+            { id: 7, name: "OG", version: "V1", lang: "Telugu", file: "assets/telugu/og.jpg" },
+            { id: 10, name: "Nayagan", version: "V1", lang: "Tamil", file: "assets/tamil/nayagan.jpg" },
+            { id: 13, name: "Rockstar", version: "V1", lang: "Hindi", file: "assets/hindi/rockstar.jpg" },
+            { id: 15, name: "Batman", version: "V1", lang: "English", file: "assets/english/batman.jpg" }
+        ];
+
+        let currentLang = 'Telugu';
+        const languages = ['Telugu', 'Tamil', 'Hindi', 'English'];
+
+        function initButtons() {
+            document.getElementById('nav-btns').innerHTML = languages.map(l => `
+                <button onclick="changeLang('${l}', this)" class="nav-btn ${l === currentLang ? 'active' : ''}">${l}</button>
+            `).join('');
+        }
+
+        function changeLang(l, btn) {
+            currentLang = l;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            render();
+        }
+
+        function createCard(p, isMainGrid) {
+            const count = posters.filter(x => x.name === p.name).length;
+            const isSeries = isMainGrid && count > 1;
+            const clickAction = isSeries ? `openCollection('${p.name}')` : `openProduct(${p.id})`;
+
+            return `
+                <div onclick="${clickAction}" class="poster-card cursor-pointer group relative">
+                    ${isSeries ? `<div class="collection-bubble">${count} Designs</div>` : ''}
+                    <div class="poster-frame">
+                        <img src="${p.file}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="mt-4 text-center">
+                        <h3 class="font-black text-[11px] uppercase tracking-wider">${p.name}</h3>
+                        <p class="text-[#00ff88] font-bold text-[10px] mt-1">₹50 ONWARDS</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function render() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const grid = document.getElementById('poster-grid');
+            let filtered = posters.filter(p => query ? p.name.toLowerCase().includes(query) : p.lang === currentLang);
+            const unique = [];
+            const display = filtered.filter(p => {
+                if(!unique.includes(p.name)) { unique.push(p.name); return true; }
+                return false;
+            });
+            grid.innerHTML = display.map(p => createCard(p, true)).join('');
+        }
+
+        function openCollection(name) {
+            const items = posters.filter(p => p.name === name);
+            document.getElementById('col-title').innerText = name;
+            document.getElementById('collection-grid').innerHTML = items.map(p => createCard(p, false)).join('');
+            document.getElementById('collection-page').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCollection() {
+            document.getElementById('collection-page').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openProduct(id) {
+            selectedPoster = posters.find(p => p.id === id);
+            document.getElementById('p-img').src = selectedPoster.file;
+            document.getElementById('p-name').innerText = selectedPoster.name;
+            document.getElementById('product-page').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            updateWA();
+        }
+
+        function closeProduct() { 
+            document.getElementById('product-page').classList.add('hidden'); 
+            if (document.getElementById('collection-page').classList.contains('hidden')) {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function selectSize(s, p, btn) {
+            selectedSizeText = s; selectedPrice = p;
+            document.getElementById('display-price').innerText = '₹' + p;
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active', 'border-[#00ff88]', 'bg-[#00ff88]/10'));
+            btn.classList.add('active', 'border-[#00ff88]', 'bg-[#00ff88]/10');
+            updateWA();
+        }
+
+        function updateWA() {
+            const msg = encodeURIComponent(`Hi Heisenbrg! I want to order:\n\nMovie: ${selectedPoster.name}\nVersion: ${selectedPoster.version}\nSize: ${selectedSizeText}\nPrice: ₹${selectedPrice}`);
+            document.getElementById('wa-link').href = `https://wa.me/${PHONE_NUMBER}?text=${msg}`;
+        }
+
+        initButtons();
+        render();
+    </script>
+</body>
+</html>
