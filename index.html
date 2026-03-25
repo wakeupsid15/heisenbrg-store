@@ -30,7 +30,7 @@
         .banner-bg {
             position: absolute;
             inset: 0;
-            background-image: url('assets/branding/banner.jpg');
+            background-image: url('./assets/branding/banner.jpg');
             background-size: cover;
             background-position: center;
             opacity: 0.5;
@@ -50,13 +50,12 @@
         }
         @media (min-width: 1024px) { .glow-title { font-size: 4rem; letter-spacing: 1.2em; margin-right: -1.2em; } }
 
-        /* INSTAGRAM BUTTON */
         .insta-link {
             position: relative;
             z-index: 2;
             margin-top: 15px;
             display: flex;
-            items-center: center;
+            align-items: center;
             gap: 8px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -72,7 +71,6 @@
         .insta-link:hover { background: #00ff88; color: black; border-color: #00ff88; }
         .insta-link svg { width: 14px; height: 14px; }
 
-        /* 5PX WHITE FRAME */
         .poster-frame {
             border: 5px solid white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -100,6 +98,7 @@
             border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.2s;
             color: #666;
+            white-space: nowrap;
         }
         .nav-btn.active { background: #00ff88; color: black; border-color: #00ff88; }
 
@@ -157,7 +156,7 @@
                     <div class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-8">
                         <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest">Select Size</p>
                         <div class="grid grid-cols-1 gap-4 mb-8">
-                            <button onclick="selectSize('A4 (210 x 297 mm)', 100, this)" class="size-btn active border border-white/20 p-4 rounded-xl flex justify-between items-center font-bold">
+                            <button onclick="selectSize('A4 (210 x 297 mm)', 100, this)" class="size-btn active border border-[#00ff88] bg-[#00ff88]/10 p-4 rounded-xl flex justify-between items-center font-bold">
                                 <div class="text-left">
                                     <span class="block text-sm">A4 Size</span>
                                     <span class="text-[10px] text-gray-400 font-normal">Ratio 1:1.41 (210 × 297 mm)</span>
@@ -191,20 +190,28 @@
         let selectedPrice = 100;
 
         const posters = [
-            { id: 1, name: "Salaar", version: "V1", lang: "Telugu", file: "assets/telugu/salaar.jpg" },
-            { id: 2, name: "Salaar", version: "V2", lang: "Telugu", file: "assets/telugu/salaar_2.jpg" },
-            { id: 3, name: "Salaar", version: "V3", lang: "Telugu", file: "assets/telugu/salaar_3.jpg" },
-            { id: 4, name: "Athadu", version: "V1", lang: "Telugu", file: "assets/telugu/athadu.jpg" },
-            { id: 5, name: "Athadu", version: "V2", lang: "Telugu", file: "assets/telugu/athadu_2.jpg" },
-            { id: 6, name: "Khaleja", version: "V1", lang: "Telugu", file: "assets/telugu/khaleja.jpg" },
-            { id: 7, name: "OG", version: "V1", lang: "Telugu", file: "assets/telugu/og.jpg" },
-            { id: 10, name: "Nayagan", version: "V1", lang: "Tamil", file: "assets/tamil/nayagan.jpg" },
-            { id: 13, name: "Rockstar", version: "V1", lang: "Hindi", file: "assets/hindi/rockstar.jpg" },
-            { id: 15, name: "Batman", version: "V1", lang: "English", file: "assets/english/batman.jpg" }
+            // ENGLISH (DEFAULT)
+            { id: 15, name: "Batman", version: "V1", lang: "English", file: "./assets/english/batman.jpg" },
+            
+            // TELUGU
+            { id: 1, name: "Salaar", version: "V1", lang: "Telugu", file: "./assets/telugu/salaar.jpg" },
+            { id: 2, name: "Salaar", version: "V2", lang: "Telugu", file: "./assets/telugu/salaar_2.jpg" },
+            { id: 3, name: "Salaar", version: "V3", lang: "Telugu", file: "./assets/telugu/salaar_3.jpg" },
+            { id: 4, name: "Athadu", version: "V1", lang: "Telugu", file: "./assets/telugu/athadu.jpg" },
+            { id: 5, name: "Athadu", version: "V2", lang: "Telugu", file: "./assets/telugu/athadu_2.jpg" },
+            { id: 6, name: "Khaleja", version: "V1", lang: "Telugu", file: "./assets/telugu/khaleja.jpg" },
+            { id: 7, name: "OG", version: "V1", lang: "Telugu", file: "./assets/telugu/og.jpg" },
+            
+            // TAMIL
+            { id: 10, name: "Nayagan", version: "V1", lang: "Tamil", file: "./assets/tamil/nayagan.jpg" },
+            
+            // HINDI
+            { id: 13, name: "Rockstar", version: "V1", lang: "Hindi", file: "./assets/hindi/rockstar.jpg" }
         ];
 
-        let currentLang = 'Telugu';
-        const languages = ['Telugu', 'Tamil', 'Hindi', 'English'];
+        // CONFIG: Set English as default
+        let currentLang = 'English';
+        const languages = ['English', 'Telugu', 'Tamil', 'Hindi'];
 
         function initButtons() {
             document.getElementById('nav-btns').innerHTML = languages.map(l => `
@@ -216,6 +223,8 @@
             currentLang = l;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            // Clear search when switching tabs
+            document.getElementById('search').value = "";
             render();
         }
 
@@ -228,7 +237,7 @@
                 <div onclick="${clickAction}" class="poster-card cursor-pointer group relative">
                     ${isSeries ? `<div class="collection-bubble">${count} Designs</div>` : ''}
                     <div class="poster-frame">
-                        <img src="${p.file}" class="w-full h-full object-cover">
+                        <img src="${p.file}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x600/111/00ff88?text=Image+Missing'">
                     </div>
                     <div class="mt-4 text-center">
                         <h3 class="font-black text-[11px] uppercase tracking-wider">${p.name}</h3>
@@ -241,7 +250,14 @@
         function render() {
             const query = document.getElementById('search').value.toLowerCase();
             const grid = document.getElementById('poster-grid');
+            
             let filtered = posters.filter(p => query ? p.name.toLowerCase().includes(query) : p.lang === currentLang);
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 opacity-50 uppercase tracking-widest text-sm">No posters found</div>`;
+                return;
+            }
+
             const unique = [];
             const display = filtered.filter(p => {
                 if(!unique.includes(p.name)) { unique.push(p.name); return true; }
@@ -292,6 +308,7 @@
             document.getElementById('wa-link').href = `https://wa.me/${PHONE_NUMBER}?text=${msg}`;
         }
 
+        // Initialize
         initButtons();
         render();
     </script>
